@@ -4069,11 +4069,106 @@ Bahmni.Common = Bahmni.Common || {}, Bahmni.Common.UIControls = Bahmni.Common.UI
                 return !1
             }, $scope.handleUpdate = $scope.handleUpdate() || function () {
                 return !1
-            }, $scope.appendConceptNameToModel = function (attribute) {
+            };
+
+            $scope.handleKeydown = function (event) {
+                const genderInputs = [
+                    "Subscriber Gender:",
+                    "S-Subscriber Gender:",
+                    "T-Subscriber Gender:",
+                ];
+
+                for (const input of genderInputs) {
+                    if (event.key === "Tab" && event.target.id === input) {
+                        handleGenderInput(input, event);
+                        break;
+                    }
+                }
+            };
+
+            function handleGenderInput(inputId, event) {
+                const genderValue = document.getElementById(inputId).value.toLowerCase();
+                const genderMap = { 'f': 'Female', 'm': 'Male', 'o': 'Other' };
+
+                if (genderMap.hasOwnProperty(genderValue)) {
+                    $scope.targetModel[inputId] = genderMap[genderValue];
+                } else {
+                    event.preventDefault(); // Prevent tab navigation for other values
+                }
+            }
+
+            $scope.handleUpdate = function (attribute, event) {
+                const attributeNames = ['Subscriber Gender:', 'S-Subscriber Gender:', 'T-Subscriber Gender:'];
+
+                for (const attributeName of attributeNames) {
+                    const genderValue = document.getElementById(attributeName).value.toLowerCase();
+                    const genderMap = { 'f': 'Female', 'm': 'Male', 'o': 'Other' };
+
+                    if (['f', 'm', 'o'].includes(genderValue)) {
+                        $scope.targetModel[attributeName] = genderMap[genderValue];
+                    }
+                }
+            };
+
+            $scope.appendConceptNameToModel = function (attribute) {
                 var attributeValueConceptType = $scope.targetModel[attribute.name],
+
                     concept = _.find(attribute.answers, function (answer) {
                         return answer.conceptId === attributeValueConceptType.conceptUuid
                     });
+
+                const attributeName = attribute.name;
+                const supportedAttributes = ['Subscriber:', 'S-Subscriber:', 'T-Subscriber:'];
+
+                if (supportedAttributes.includes(attributeName)) {
+
+                    if (concept.fullySpecifiedName === 'Self') {
+                        const parts = [$scope.targetModel.givenName, $scope.targetModel.middleName, $scope.targetModel.familyName];
+                        const attributeKeys = {
+                            'Subscriber:': 'Subscriber',
+                            'S-Subscriber:': 'S-Subscriber',
+                            'T-Subscriber:': 'T-Subscriber',
+                        };
+                        if (attributeKeys.hasOwnProperty(attributeName)) {
+                            const nameKey = attributeKeys[attributeName] + ' Name:';
+                            const ssnKey = attributeKeys[attributeName] + ' SSN:';
+                            const dobKey = attributeKeys[attributeName] + ' DOB:';
+                            const genderKey = attributeKeys[attributeName] + ' Gender:';
+
+                            $scope.targetModel[nameKey] = parts.filter((part) => part !== null).join(' ');
+                            $scope.targetModel[ssnKey] = $scope.targetModel.extraIdentifiers[0].identifier;
+                            $scope.targetModel[dobKey] = $scope.targetModel.birthdate;
+
+                            const gender = $scope.targetModel.gender;
+                            $scope.targetModel[genderKey] = gender === 'M' ? 'Male' : gender === 'F' ? 'Female' : 'Other';
+
+                        }
+
+                    } else {
+                        // Clear the fields for the specific attribute
+                        const attributeKeys = {
+                            'Subscriber:': 'Subscriber',
+                            'S-Subscriber:': 'S-Subscriber',
+                            'T-Subscriber:': 'T-Subscriber',
+                        };
+
+                        if (attributeKeys.hasOwnProperty(attributeName)) {
+                            const keyPrefix = attributeKeys[attributeName];
+                            const keysToClear = [
+                                keyPrefix + ' Name:',
+                                keyPrefix + ' SSN:',
+                                keyPrefix + ' Gender:',
+                                keyPrefix + ' DOB:',
+                            ];
+
+                            keysToClear.forEach((key) => {
+                                $scope.targetModel[key] = '';
+                            });
+                        }
+
+                    }
+                }
+
                 attributeValueConceptType.value = concept && concept.fullySpecifiedName
             }, $scope.getTranslatedAttributeTypes = function (attribute) {
                 return Bahmni.Common.Util.TranslationUtil.translateAttribute(attribute, Bahmni.Common.Constants.patientAttribute, $translate)

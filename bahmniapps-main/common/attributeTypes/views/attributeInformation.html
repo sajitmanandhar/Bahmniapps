@@ -8,7 +8,7 @@
         <span data-ng-switch="::isAutoComplete(attribute.name)">
             <input data-ng-switch-when="true" type="text" id="{{::attribute.name}}" ng-model="targetModel[attribute.name]" data-item-type="personAttribute" my-autocomplete source="getAutoCompleteList" response-map="getDataResults" ng-disabled="::isReadOnly(attribute.name)" ng-required="{{::attribute.required}}" ng-blur="::handleUpdate(attribute.name)">
 
-            <input data-ng-switch-default type="text" pattern-validate id="{{::attribute.name}}" ng-model="targetModel[attribute.name]" data-item-type="personAttribute" ng-disabled="::isReadOnly(attribute.name)" ng-required="{{::attribute.required}}" ng-blur="::handleUpdate(attribute.name)">
+           <input data-ng-switch-default type="text" pattern-validate id="{{::attribute.name}}" ng-model="targetModel[attribute.name]" data-item-type="personAttribute" ng-disabled="::isReadOnly(attribute.name)" ng-required="{{::attribute.required}}" ng-blur="::handleUpdate(attribute.name,$event)" ng-keydown="handleKeydown($event)" >
         </span>
     </div>
     <div class="left" data-ng-switch-when="org.openmrs.Concept">
