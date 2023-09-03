@@ -4134,10 +4134,18 @@ Bahmni.Common = Bahmni.Common || {}, Bahmni.Common.UIControls = Bahmni.Common.UI
                             const ssnKey = attributeKeys[attributeName] + ' SSN:';
                             const dobKey = attributeKeys[attributeName] + ' DOB:';
                             const genderKey = attributeKeys[attributeName] + ' Gender:';
+                            const city = attributeKeys[attributeName] + ' City:';
+                            const state = attributeKeys[attributeName] + ' State:';
+                            const cellPhone = attributeKeys[attributeName] + ' Phone:';
+                            const zipCode = attributeKeys[attributeName] + ' Zip Code:';
 
                             $scope.targetModel[nameKey] = parts.filter((part) => part !== null).join(' ');
                             $scope.targetModel[ssnKey] = $scope.targetModel.extraIdentifiers[0].identifier;
                             $scope.targetModel[dobKey] = $scope.targetModel.birthdate;
+                            $scope.targetModel[city] = $scope.targetModel.address.cityVillage;
+                            $scope.targetModel[state] = $scope.targetModel.address.stateProvince;
+                            $scope.targetModel[cellPhone] = $scope.targetModel.address.address2;
+                            $scope.targetModel[zipCode] = $scope.targetModel.address.postalCode;
 
                             const gender = $scope.targetModel.gender;
                             $scope.targetModel[genderKey] = gender === 'M' ? 'Male' : gender === 'F' ? 'Female' : 'Other';
@@ -4159,6 +4167,11 @@ Bahmni.Common = Bahmni.Common || {}, Bahmni.Common.UIControls = Bahmni.Common.UI
                                 keyPrefix + ' SSN:',
                                 keyPrefix + ' Gender:',
                                 keyPrefix + ' DOB:',
+                                keyPrefix + ' City:',
+                                keyPrefix + ' State:',
+                                keyPrefix + ' Phone:',
+                                keyPrefix + ' Zip Code:'
+                    
                             ];
 
                             keysToClear.forEach((key) => {
